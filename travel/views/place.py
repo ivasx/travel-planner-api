@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 from ..models import Project, Place
 from ..serializers import PlaceSerializer, PlaceCreateSerializer, PlaceUpdateSerializer
@@ -8,6 +9,8 @@ from ..serializers import PlaceSerializer, PlaceCreateSerializer, PlaceUpdateSer
 
 class PlaceListCreateView(generics.ListCreateAPIView):
     serializer_class = PlaceSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["visited"]
 
     def get_queryset(self):
         return Place.objects.filter(project_id=self.kwargs["project_id"])
@@ -53,7 +56,7 @@ class PlaceDetailView(generics.RetrieveUpdateAPIView):
         return PlaceSerializer
 
     def update(self, request, *args, **kwargs):
-        response = super().update(request, *args, **kwargs)
+        super().update(request, *args, **kwargs)
         place = self.get_object()
 
         project = place.project
